@@ -1,36 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { baseUrl } from '../App'
 
-const EditMovieForm = (props) => {
+const AddMovieForm = (props) => {
   const [movie, setMovie] = useState({
     title: "",
     director: "",
     genre: "",
     metascore: 0,
     description: ""
-  });
+  })
   const navigate = useNavigate();
-  const { id } = useParams()
-
   const { setMovies } = props
-
-  useEffect(() => {
-    axios.get(`${baseUrl}/${id}`)
-      .then(res => {
-        setMovie({
-          ...movie,
-          title: res.data.title,
-          director: res.data.director,
-          genre: res.data.genre,
-          metascore: res.data.metascore,
-          description: res.data.description
-        })
-      })
-      .catch(err => console.log(err))
-  }, [])
 
   const handleChange = (e) => {
     setMovie({
@@ -41,10 +24,19 @@ const EditMovieForm = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.put(`${baseUrl}/${id}`, movie)
+
+    const newMovie = {
+      title: movie.title.trim(),
+      director: movie.director.trim(),
+      genre: movie.genre.trim(),
+      metascore: 0,
+      description: movie.description.trim()
+    }
+    
+    axios.post(`${baseUrl}`, newMovie)
       .then(res => {
         setMovies(res.data);
-        navigate(`/movies/${id}`);
+        navigate('/movies');
       })
       .catch(err => {
         console.log(err);
@@ -58,7 +50,7 @@ const EditMovieForm = (props) => {
       <div className="modal-content">
         <form onSubmit={handleSubmit}>
           <div className="modal-header">
-            <h4 className="modal-title">Editing <strong>{movie.title}</strong></h4>
+            <h4 className="modal-title">Add a Movie</h4>
           </div>
           <div className="modal-body">
             <div className="form-group">
@@ -84,12 +76,12 @@ const EditMovieForm = (props) => {
 
           </div>
           <div className="modal-footer">
-            <input type="submit" className="btn btn-info" value="Save" />
-            <Link to={`/movies/${id}`}><input type="button" className="btn btn-default" value="Cancel" /></Link>
+            <input type="submit" className="btn btn-info" value="Add Movie" />
+            <Link to={'/movies'}><input type="button" className="btn btn-default" value="Cancel" /></Link>
           </div>
         </form>
       </div>
     </div>);
 }
 
-export default EditMovieForm;
+export default AddMovieForm;

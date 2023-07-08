@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-
 import axios from 'axios';
+import { baseUrl } from '../App'
 
 const Movie = (props) => {
-  const { addToFavorites } = props;
+  const { setMovies, addToFavorites } = props;
 
   const [movie, setMovie] = useState('');
 
@@ -20,6 +20,15 @@ const Movie = (props) => {
         console.log(err.response);
       })
   }, [id]);
+
+  const handleDelete = () => {
+    axios.delete(`${baseUrl}/${id}`)
+      .then(res => {
+        setMovies(res.data)
+        navigate('/movies')
+      })
+      .catch(err => console.log(err))
+  }
 
   return (<div className="modal-page col">
     <div className="modal-dialog">
@@ -52,7 +61,7 @@ const Movie = (props) => {
             <section>
               <span className="m-2 btn btn-dark">Favorite</span>
               <Link to={`/movies/edit/${movie.id}`} className="m-2 btn btn-success">Edit</Link>
-              <span className="delete"><input type="button" className="m-2 btn btn-danger" value="Delete" /></span>
+              <span className="delete"><input type="button" className="m-2 btn btn-danger" value="Delete" onClick={handleDelete} /></span>
             </section>
           </div>
         </div>
